@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PTS Inspector 简明手册 / Quick Manual</title>
+<style>
+  :root {
+    --navy: #16324f;
+    --blue: #1f6f8b;
+    --accent: #c45c26;
+    --ok: #1b7f4e;
+    --warn: #b45309;
+    --bg: #f4f6f8;
+    --card: #ffffff;
+    --line: #d8dee6;
+    --text: #1c2430;
+    --muted: #5b6775;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans SC", "Segoe UI", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    font-size: 16px;
+  }
+  .top {
+    position: sticky; top: 0; z-index: 20;
+    background: var(--navy); color: #fff;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; padding: 10px 18px;
+  }
+  .top b { font-size: 16px; }
+  .top .sub { opacity: .8; font-size: 13px; margin-left: 8px; }
+  .lang {
+    display: flex; background: #0f2236; border-radius: 8px; overflow: hidden;
+  }
+  .lang button {
+    border: 0; background: transparent; color: #c9d4e0;
+    padding: 7px 12px; cursor: pointer; font-size: 14px;
+  }
+  .lang button.on { background: #c45c26; color: #fff; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 18px 16px 60px; }
+  nav {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 10px; padding: 12px 16px; margin-bottom: 18px;
+  }
+  nav a { color: var(--blue); text-decoration: none; margin-right: 12px; display: inline-block; margin-bottom: 4px; }
+  nav a:hover { text-decoration: underline; }
+  h1 { font-size: 26px; margin: 8px 0 6px; }
+  h2 {
+    font-size: 20px; color: var(--navy);
+    border-left: 5px solid var(--accent);
+    padding-left: 10px; margin: 28px 0 10px;
+  }
+  h3 { font-size: 17px; margin: 16px 0 8px; }
+  .lead { color: var(--muted); margin-bottom: 16px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 10px; padding: 14px 16px; margin: 12px 0 18px;
+  }
+  ol.steps { margin: 8px 0 12px 18px; padding: 0; }
+  ol.steps li { margin: 6px 0; }
+  img.shot {
+    width: 100%; height: auto; border: 1px solid var(--line);
+    border-radius: 8px; display: block; margin: 8px 0 4px;
+  }
+  .cap { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
+  .do, .dont, .tip {
+    border-radius: 8px; padding: 10px 12px; margin: 10px 0;
+  }
+  .do { background: #e8f6ee; border-left: 4px solid var(--ok); }
+  .dont { background: #fdecec; border-left: 4px solid #c0392b; }
+  .tip { background: #fff6e8; border-left: 4px solid var(--warn); }
+  table { width: 100%; border-collapse: collapse; background: #fff; }
+  th, td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; vertical-align: top; }
+  th { background: #eef3f7; }
+  .zh { display: none; }
+  .en { display: none; }
+  body.lang-zh .zh { display: block; }
+  body.lang-en .en { display: block; }
+  span.zh, span.en { display: none; }
+  body.lang-zh span.zh { display: inline; }
+  body.lang-en span.en { display: inline; }
+  td .zh, td .en, th .zh, th .en, li .zh, li .en, a .zh, a .en, p .zh, p .en { display: none; }
+  body.lang-zh td .zh, body.lang-zh th .zh, body.lang-zh li .zh, body.lang-zh a .zh, body.lang-zh p .zh { display: inline; }
+  body.lang-en td .en, body.lang-en th .en, body.lang-en li .en, body.lang-en a .en, body.lang-en p .en { display: inline; }
+  footer { color: var(--muted); font-size: 13px; margin-top: 36px; }
+  @media print {
+    .top, nav { position: static; }
+    .lang { display: none; }
+    a { color: inherit; }
+  }
+</style>
+</head>
+<body class="lang-zh">
+<div class="top">
+  <div>
+    <b>PTS Inspector</b>
+    <span class="sub zh">验货报告 APP 简明手册</span>
+    <span class="sub en">Inspection App Quick Manual</span>
+  </div>
+  <div class="lang">
+    <button id="btn-zh" class="on" onclick="setLang('zh')">中文</button>
+    <button id="btn-en" onclick="setLang('en')">English</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <p class="zh lead">给现场验货员用。按左边菜单从上到下做。看图，对照着点。做完等到右上角 Saved，系统会自动提交。</p>
+  <p class="en lead">For on-site QC. Work the left menu from top to bottom. Follow the pictures. When the top right says Saved, the report submits by itself.</p>
+
+  <nav>
+    <a href="#open"><span class="zh">1. 打开 / 登录</span><span class="en">1. Open / Login</span></a>
+    <a href="#tasks"><span class="zh">2. 找任务</span><span class="en">2. Find a task</span></a>
+    <a href="#photos"><span class="zh">3. 拍照</span><span class="en">3. Photos</span></a>
+    <a href="#qty"><span class="zh">4. 数量装箱</span><span class="en">4. Quantity</span></a>
+    <a href="#criteria"><span class="zh">5. 标准 / 缺陷</span><span class="en">5. Criteria / Defects</span></a>
+    <a href="#pack"><span class="zh">6. 箱唛条码</span><span class="en">6. Packing / Barcode</span></a>
+    <a href="#meas"><span class="zh">7. 量度测试</span><span class="en">7. Measure / Test</span></a>
+    <a href="#general"><span class="zh">8. 现场照片</span><span class="en">8. General Photos</span></a>
+    <a href="#remark"><span class="zh">9. 问题备注</span><span class="en">9. Remarks</span></a>
+    <a href="#save"><span class="zh">10. 保存</span><span class="en">10. Save</span></a>
+    <a href="#faq"><span class="zh">常见问题</span><span class="en">FAQ</span></a>
+  </nav>
+
+  <h2 id="open"><span class="zh">1. 打开网站并登录</span><span class="en">1. Open the site and log in</span></h2>
+  <div class="card">
+    <ol class="steps">
+      <li class="zh">电脑打开 Edge 或 Chrome。</li>
+      <li class="en">Open Edge or Chrome on the PC.</li>
+      <li class="zh">地址栏输入：<b>https://inspecting.pts-qc.com/</b></li>
+      <li class="en">Type this address: <b>https://inspecting.pts-qc.com/</b></li>
+      <li class="zh">输入公司给你的账号和密码，点橙色 <b>LOG IN</b>。</li>
+      <li class="en">Enter the account the office gave you, then click orange <b>LOG IN</b>.</li>
+      <li class="zh">忘记密码：联系 <b>Nash</b> 重置。不要点 Reset Password，那个按钮还不能用。</li>
+      <li class="en">Forgot password: contact <b>Nash</b>. Do not click Reset Password — that button is not enabled.</li>
+    </ol>
+    <img class="shot" src="images/01_login.jpg" alt="Login">
+    <div class="cap zh">登录页。账号在上，密码在下，点 LOG IN。</div>
+    <div class="cap en">Login page. Account on top, password below, then LOG IN.</div>
+    <div class="tip zh">网址要抄全。不要用百度搜，搜到的不是这个系统。</div>
+    <div class="tip en">Type the full address. Do not search for it on Baidu — that is not this system.</div>
+  </div>
+
+  <h2 id="tasks"><span class="zh">2. 找到今天的任务</span><span class="en">2. Find today’s task</span></h2>
+  <div class="card">
+    <ol class="steps">
+      <li class="zh">登录后就是任务列表。</li>
+      <li class="en">After login you see the task list.</li>
+      <li class="zh">上面可以点：<b>Not Started</b>（没开始） / <b>In Progress</b>（做到一半） / <b>Ready to Submit</b>（可以交） / <b>Submitted</b>（已交）。</li>
+      <li class="en">Filter with <b>Not Started</b> / <b>In Progress</b> / <b>Ready to Submit</b> / <b>Submitted</b>.</li>
+      <li class="zh">右边搜索框可以打 PO 号或款号。</li>
+      <li class="en">Use the search box for PO number or style number.</li>
+      <li class="zh">找到自己的单，右边点 <b>Start</b> 或 <b>Continue</b>。</li>
+      <li class="en">On your row, click <b>Start</b> or <b>Continue</b>.</li>
+    </ol>
+    <img class="shot" src="images/02_tasks.jpg" alt="Task list">
+    <div class="cap zh">右边：Start = 开始，Continue = 继续做。</div>
+    <div class="cap en">Right side: Start = begin, Continue = keep working.</div>
+  </div>
+
+  <h2 id="photos"><span class="zh">3. 厂门口和产品照</span><span class="en">3. Factory gate and product photos</span></h2>
+  <div class="card">
+    <p class="zh">打开任务后，左边是菜单，从上到下做。先拍照。</p>
+    <p class="en">Inside a task, the left menu is the order of work. Start with photos.</p>
+    <ol class="steps">
+      <li class="zh"><b>Factory Gate</b>：拍一张工厂门口。只能一张，再拍会替换。</li>
+      <li class="en"><b>Factory Gate</b>: one photo of the factory entrance. A new photo replaces the old one.</li>
+      <li class="zh"><b>Product Photos</b>：产品平铺/挂拍。插入几张就显示几张，需要几张传几张。</li>
+      <li class="en"><b>Product Photos</b>: product as presented. However many photos you add, that many will show.</li>
+      <li class="zh">点 <b>Add Photos</b>，或把照片拖进虚线框。</li>
+      <li class="en">Click <b>Add Photos</b>, or drag files into the dashed box.</li>
+    </ol>
+    <img class="shot" src="images/03_photos.jpg" alt="Photos">
+    <div class="cap zh">左边菜单从上往下做。产品照：插入几张，页面上就显示几张。</div>
+    <div class="cap en">Work the left menu from top to bottom. Product Photos: add as many as you need — they all show.</div>
+  </div>
+
+  <h2 id="qty"><span class="zh">4. 数量和抽箱（Quantity &amp; Packing）</span><span class="en">4. Quantity &amp; Packing</span></h2>
+  <div class="card">
+    <ol class="steps">
+      <li class="zh">系统可能预填了数字。以工厂现场实际为准，不对就改。办公室不一定知道现场箱数。</li>
+      <li class="en">Numbers may be pre-filled. Change them to match what you see at the factory. The office may not know the actual carton count.</li>
+      <li class="zh">核对并按实际填写：订单数、实装数、总箱数、抽几箱、抽几件。</li>
+      <li class="en">Check and enter the real figures: order qty, shipped qty, total cartons, sample cartons, sample qty.</li>
+      <li class="zh">默认用 <b>Combined</b>（整票一起抽）。只有办公室让你分的时候，才点 <b>Split Groups</b>。</li>
+      <li class="en">Keep <b>Combined</b> unless the office told you to split. Then use <b>Split Groups</b>.</li>
+      <li class="zh">把抽到的箱号写在 <b>Sampled Carton Numbers</b>，例如：895S: 10, 23, 41</li>
+      <li class="en">Type sampled carton numbers in <b>Sampled Carton Numbers</b>, e.g. 895S: 10, 23, 41</li>
+      <li class="zh">最下面 Quantity Verdict 选 PASS / FAIL / N/A。</li>
+      <li class="en">Set Quantity Verdict to PASS / FAIL / N/A at the bottom.</li>
+    </ol>
+    <img class="shot" src="images/04_quantity.jpg" alt="Quantity">
+    <div class="do zh">箱数、件数按你现场看到的改。预填不对就改成对的。</div>
+    <div class="do en">Change carton and piece counts to what you actually count on site.</div>
+  </div>
+
+  <h2 id="criteria"><span class="zh">5. 检验标准和做工缺陷</span><span class="en">5. Criteria and workmanship defects</span></h2>
+  <div class="card">
+    <h3 class="zh">Inspection Criteria</h3>
+    <h3 class="en">Inspection Criteria</h3>
+    <p class="zh">有没有金样、客户资料、QC 文件。有就点 <b>YES</b>，没有点 <b>NO</b>，这单不需要点 <b>N/A</b>。</p>
+    <p class="en">Golden sample, client spec, QC file: click <b>YES</b> if present, <b>NO</b> if missing, <b>N/A</b> if not needed.</p>
+    <img class="shot" src="images/05_criteria.jpg" alt="Criteria">
+
+    <h3 class="zh">记缺陷：点蓝色 + New Defect</h3>
+    <h3 class="en">Record a defect: click blue + New Defect</h3>
+    <ol class="steps">
+      <li class="zh">在代码框打几个字母，选出正确代码（如 VM22）。</li>
+      <li class="en">Type a few letters and pick the code (example: VM22).</li>
+      <li class="zh">写部位 Location（袖子、领子…），写样品号。</li>
+      <li class="en">Fill Location (sleeve, collar…) and Sample No.</li>
+      <li class="zh">件数填在 C / M / m（严重 / 主要 / 次要）。只填一档。</li>
+      <li class="en">Put the count in C, M or m (Critical / Major / Minor). Use one grade only.</li>
+      <li class="zh">点 <b>Add</b>。</li>
+      <li class="en">Click <b>Add</b>.</li>
+      <li class="zh">在缺陷右边 <b>+ Add</b> 贴上缺陷照片。</li>
+      <li class="en">Click <b>+ Add</b> on the right of that defect to attach photos.</li>
+    </ol>
+    <img class="shot" src="images/06_new_defect.jpg" alt="New defect">
+    <div class="cap zh">搜索代码 → 填部位和件数 → Add。</div>
+    <div class="cap en">Search the code → location and count → Add.</div>
+    <img class="shot" src="images/07_defects.jpg" alt="Defect list">
+    <div class="cap zh">每条缺陷右边都要有照片。C / M / m 的数字要和现场一致。</div>
+    <div class="cap en">Every defect needs photos. C / M / m counts must match what you found.</div>
+  </div>
+
+  <h2 id="pack"><span class="zh">6. 装箱、箱唛、条码</span><span class="en">6. Packing, shipping mark, barcode</span></h2>
+  <div class="card">
+    <h3 class="zh">Packing 装箱</h3>
+    <h3 class="en">Packing</h3>
+    <ol class="steps">
+      <li class="zh">填外箱尺寸 L×W×H 和箱重。</li>
+      <li class="en">Enter carton size L×W×H and carton weight.</li>
+      <li class="zh">内包装、配比等项，对的点 CONFORM，不对点 NOT。</li>
+      <li class="en">Inner packing / assortment: CONFORM if OK, NOT if not.</li>
+    </ol>
+    <img class="shot" src="images/08_packing.jpg" alt="Packing">
+
+    <h3 class="zh">Shipping Mark 箱唛</h3>
+    <h3 class="en">Shipping Mark</h3>
+    <p class="zh">主唛、侧唛、产地、箱规，一项一项点 PASS / FAIL / N/A。有问题可点 + Add note 写一句。</p>
+    <p class="en">Main mark, side mark, country of origin, carton size vs spec: PASS / FAIL / N/A. Use + Add note if needed.</p>
+    <img class="shot" src="images/09_shipping.jpg" alt="Shipping mark">
+
+    <h3 class="zh">Barcodes 条码</h3>
+    <h3 class="en">Barcodes</h3>
+    <ol class="steps">
+      <li class="zh">先点右上角 <b>Scan</b>。</li>
+      <li class="en">First click <b>Scan</b> at the top right.</li>
+      <li class="zh">用连在电脑上的扫码枪对着条码扫。数字会自动进来，不用手打。</li>
+      <li class="en">Scan with the barcode gun plugged into the PC. The number is recorded automatically — do not type it.</li>
+    </ol>
+    <img class="shot" src="images/10_barcode.jpg" alt="Barcode">
+    <div class="tip zh">扫之前一定要点 Scan。不点 Scan，枪扫了也不会记进来。</div>
+    <div class="tip en">Click Scan before you pull the trigger. If Scan is off, the gun will not record anything.</div>
+  </div>
+
+  <h2 id="meas"><span class="zh">7. 量度和现场测试</span><span class="en">7. Measurements and on-site tests</span></h2>
+  <div class="card">
+    <h3 class="zh">Measurements 量度表</h3>
+    <h3 class="en">Measurements</h3>
+    <ol class="steps">
+      <li class="zh">系统通常已经有尺寸表。没有就点 <b>Import Spec Sheet</b> 导入客户表。</li>
+      <li class="en">The size chart is usually already there. If not, click <b>Import Spec Sheet</b>.</li>
+      <li class="zh">在空白格填量到的数字。单位一般是 inch。</li>
+      <li class="en">Type measured values in the empty cells. Unit is usually inch.</li>
+      <li class="zh"><b>红格 = 超公差</b>，要再量一次确认。</li>
+      <li class="en"><b>Red cell = out of tolerance</b>. Measure again to confirm.</li>
+      <li class="zh">衣服称重：点 + Add weight。</li>
+      <li class="en">Garment weight: click + Add weight.</li>
+    </ol>
+    <img class="shot" src="images/11_measure.jpg" alt="Measurements">
+
+    <h3 class="zh">On-Site Testing 现场测试</h3>
+    <h3 class="en">On-Site Testing</h3>
+    <p class="zh">摩擦、拉力、缝拉力、条码等。做了点 CONFORM，没做或不适用点 N.A.，失败点 NOT CONFORM。结果可写在 Findings。</p>
+    <p class="en">Rub, pull, seam, barcode, etc. CONFORM if done and OK, N.A. if not required, NOT CONFORM if failed. Write findings if needed.</p>
+    <img class="shot" src="images/12_testing.jpg" alt="Testing">
+  </div>
+
+  <h2 id="general"><span class="zh">8. 现场照片 General Photos（重点）</span><span class="en">8. General Photos (important)</span></h2>
+  <div class="card">
+    <p class="zh">左边菜单 <b>09 General Photos</b>。上面一排是分类（对应报告里不同的页）。<b>必须先点对分类，再插入照片</b>，插错页，报告里就会出现在错误的位置。</p>
+    <p class="en">Left menu <b>09 General Photos</b>. The tabs are report sheets. <b>Click the correct tab first, then add photos.</b> Wrong tab = wrong page in the report.</p>
+    <ol class="steps">
+      <li class="zh">点要传的那一类，例如箱唛点 <b>Carton &amp; Shipping Mark</b>，洗标点 <b>Hangtag / Care Label</b>，量度照点 <b>Dimension photos</b>。</li>
+      <li class="en">Click the matching tab, e.g. carton marks → <b>Carton &amp; Shipping Mark</b>, care labels → <b>Hangtag / Care Label</b>, measurement photos → <b>Dimension photos</b>.</li>
+      <li class="zh">再把照片拖进下面的框，或点框上传。插入几张就显示几张。</li>
+      <li class="en">Then drop photos into the box (or click to upload). However many you add, that many will show.</li>
+      <li class="zh">一类传完，再点下一类，继续传。不要把所有照片塞进同一个分类。</li>
+      <li class="en">Finish one tab, then click the next. Do not dump every photo into one tab.</li>
+    </ol>
+    <table>
+      <tr>
+        <th><span class="zh">点这个分类</span><span class="en">Click this tab</span></th>
+        <th><span class="zh">放这些照片</span><span class="en">Put these photos</span></th>
+      </tr>
+      <tr><td>Product Family Photo</td><td><span class="zh">产品整体、款式照</span><span class="en">Product / style photos</span></td></tr>
+      <tr><td>Carton &amp; Shipping Mark</td><td><span class="zh">外箱、箱唛</span><span class="en">Cartons and shipping marks</span></td></tr>
+      <tr><td>Inner Packing</td><td><span class="zh">内包装、胶袋、配件</span><span class="en">Inner packing, polybags, accessories</span></td></tr>
+      <tr><td>Factory &amp; Storage</td><td><span class="zh">车间、仓库、堆货</span><span class="en">Workshop, warehouse, stock</span></td></tr>
+      <tr><td>Hangtag / Care Label</td><td><span class="zh">吊牌、洗标、主标</span><span class="en">Hangtag, care label, main label</span></td></tr>
+      <tr><td>Dimension photos</td><td><span class="zh">量度、卡尺照</span><span class="en">Measurement / caliper photos</span></td></tr>
+    </table>
+    <img class="shot" src="images/16_general.jpg" alt="General Photos">
+    <div class="cap zh">先点上面的分类名字（图里当前是 Dimension photos），再往框里插图。</div>
+    <div class="cap en">Click the tab name first (Dimension photos is selected here), then drop photos into the box.</div>
+    <div class="dont zh">不要不点分类就把照片丢进去。箱唛、洗标、量度必须各进各的页。</div>
+    <div class="dont en">Do not add photos without selecting a tab. Carton marks, labels and measurements must each go on their own sheet.</div>
+    <h3 class="zh">Documents 文件</h3>
+    <h3 class="en">Documents</h3>
+    <p class="zh">QC 检查表、反贿赂信是 Required。点 Upload 或 Capture 拍照上传。</p>
+    <p class="en">QC File Check List and Anti-bribery Letter are Required. Use Upload or Capture.</p>
+    <img class="shot" src="images/13_photos_docs.jpg" alt="Documents">
+  </div>
+
+  <h2 id="remark"><span class="zh">9. 问题备注 Problem Remark（重点）</span><span class="en">9. Problem Remark (important)</span></h2>
+  <div class="card">
+    <p class="zh">在 <b>Result Summary</b> 下面的 <b>Problem Remark</b>。有问题必须写在这里，不要只改 PASS/FAIL 不写原因。</p>
+    <p class="en">Under <b>Result Summary</b> is <b>Problem Remark</b>. If there is a problem, write it here. Do not only change PASS/FAIL.</p>
+    <ol class="steps">
+      <li class="zh">点右边 <b>+ Add line</b>，加一条备注。</li>
+      <li class="en">Click <b>+ Add line</b> to add one remark.</li>
+      <li class="zh">在这一行写清楚问题，例如：No approval sample。</li>
+      <li class="en">Type the problem on that line, e.g. No approval sample.</li>
+      <li class="zh">重要问题或 FAIL：点这一行右边的<b>小红旗</b>，这条会变红，报告里也会标红。</li>
+      <li class="en">Important issues or FAIL: click the <b>small red flag</b> on that line. The line turns red and is marked red on the report.</li>
+      <li class="zh">点相机图标，或把照片拖到这一行，给这条备注配图说明。</li>
+      <li class="en">Click the camera icon, or drop a photo onto that line, to illustrate the remark.</li>
+      <li class="zh">一条问题一行。不要把所有问题写在同一行。</li>
+      <li class="en">One problem per line. Do not put every issue on the same line.</li>
+    </ol>
+    <img class="shot" src="images/14_result.jpg" alt="Problem Remark">
+    <div class="cap zh">+ Add line 加行。小红旗 = 重要或 FAIL。右边相机 = 给这条备注插图。</div>
+    <div class="cap en">+ Add line adds a row. Red flag = important or FAIL. Camera = attach a photo to that remark.</div>
+    <div class="do zh">FAIL 或严重问题：写备注 + 点红旗 + 插一张能看清问题的照片。</div>
+    <div class="do en">For FAIL or a serious issue: write the remark, turn on the red flag, and attach a clear photo.</div>
+  </div>
+
+  <h2 id="save"><span class="zh">10. 保存（不用自己点提交）</span><span class="en">10. Save (no need to click Submit)</span></h2>
+  <div class="card">
+    <ol class="steps">
+      <li class="zh">看右上角：要显示 <b>Saved</b> 才可以离开。</li>
+      <li class="en">Top right must say <b>Saved</b> before you leave.</li>
+      <li class="zh">还在 <b>Unsaved</b> 或 <b>Saved (photos pending)</b>：等网络，等到 Saved。</li>
+      <li class="en">If you see <b>Unsaved</b> or <b>Saved (photos pending)</b>: wait until it is Saved.</li>
+      <li class="zh">出现橙色 <b>photos not uploaded</b>：照片还在传。不要关电脑、不要关网页。</li>
+      <li class="en">Orange <b>photos not uploaded</b> means photos are still sending. Do not close the browser.</li>
+      <li class="zh">做完并等到 Saved 即可。<b>系统会自动提交，不用自己点 Submit</b>，也不用去点右上角绿色 Submitted。</li>
+      <li class="en">Finish the work and wait for Saved. <b>Submit is automatic — do not click Submit</b>, and do not tap the green Submitted badge.</li>
+    </ol>
+    <img class="shot" src="images/15_upload_warn.jpg" alt="Leave without saving">
+    <div class="dont zh">弹出 <b>Leave without saving?</b> 时，必须点左边 <b>Stay and retry</b>。点红色 Leave anyway，照片会丢，补不回来。</div>
+    <div class="dont en">If you see <b>Leave without saving?</b> click <b>Stay and retry</b>. <b>Leave anyway</b> deletes photos that were not uploaded. They cannot be recovered.</div>
+    <div class="do zh">工厂网络慢：做完一节就停一下，看右上角变成 Saved，再做下一节。</div>
+    <div class="do en">Slow factory Wi-Fi: finish one section, wait for Saved, then continue.</div>
+  </div>
+
+  <h2 id="faq"><span class="zh">常见问题</span><span class="en">FAQ</span></h2>
+  <div class="card">
+    <table>
+      <tr>
+        <th><span class="zh">情况</span><span class="en">What you see</span></th>
+        <th><span class="zh">怎么做</span><span class="en">What to do</span></th>
+      </tr>
+      <tr>
+        <td><span class="zh">打不开网站</span><span class="en">Site will not open</span></td>
+        <td><span class="zh">检查网址是 inspecting.pts-qc.com。换手机热点试一次。还不行打办公室。</span><span class="en">Check the address inspecting.pts-qc.com. Try a phone hotspot. If still down, call the office.</span></td>
+      </tr>
+      <tr>
+        <td><span class="zh">列表里没有我的单</span><span class="en">My PO is not in the list</span></td>
+        <td><span class="zh">搜索 PO。看是不是点错了 Not Started / In Progress。还没有就让办公室派单。</span><span class="en">Search the PO. Check the status filter. If it is missing, ask the office to assign it.</span></td>
+      </tr>
+      <tr>
+        <td><span class="zh">照片传很慢</span><span class="en">Photos upload slowly</span></td>
+        <td><span class="zh">一次别拖太多。等右上角 Saved。不要重复点上传。</span><span class="en">Upload fewer files at a time. Wait for Saved. Do not click upload over and over.</span></td>
+      </tr>
+      <tr>
+        <td><span class="zh">点错缺陷代码</span><span class="en">Wrong defect code</span></td>
+        <td><span class="zh">在那一条上改数字，或删掉重加。照片一起挂在正确那条上。</span><span class="en">Edit the count on that line, or delete and add again. Keep photos on the correct line.</span></td>
+      </tr>
+      <tr>
+        <td><span class="zh">量度格子变红</span><span class="en">Measurement cell is red</span></td>
+        <td><span class="zh">再量一次。仍超差就按客户规则记缺陷，不要把红格改成假数字。</span><span class="en">Measure again. If still out, record the defect per the client. Do not type a fake number.</span></td>
+      </tr>
+      <tr>
+        <td><span class="zh">忘记密码</span><span class="en">Forgot password</span></td>
+        <td><span class="zh">联系 Nash，不要点 Reset Password。</span><span class="en">Contact Nash. Do not click Reset Password.</span></td>
+      </tr>
+      <tr>
+        <td><span class="zh">已经交过还要改</span><span class="en">Need to change after it is submitted</span></td>
+        <td><span class="zh">联系办公室解锁或改单。</span><span class="en">Ask the office to unlock or amend.</span></td>
+      </tr>
+    </table>
+  </div>
+
+  <footer>
+    <p class="zh">PTS Global Quality Solutions　电脑打开本文件夹里的「打开手册.html」即可，不需要上网（图片都在 images 文件夹）。网址：https://inspecting.pts-qc.com/</p>
+    <p class="en">PTS Global Quality Solutions. Open <b>打开手册.html</b> in this folder — no internet needed for the manual. App URL: https://inspecting.pts-qc.com/</p>
+  </footer>
+</div>
+<script>
+function setLang(l) {
+  document.body.className = 'lang-' + l;
+  document.getElementById('btn-zh').className = (l === 'zh') ? 'on' : '';
+  document.getElementById('btn-en').className = (l === 'en') ? 'on' : '';
+  try { localStorage.setItem('pts_manual_lang', l); } catch (e) {}
+}
+try {
+  var s = localStorage.getItem('pts_manual_lang');
+  if (s === 'en' || s === 'zh') setLang(s);
+} catch (e) {}
+</script>
+</body>
+</html>
